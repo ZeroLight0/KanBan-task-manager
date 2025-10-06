@@ -48,7 +48,7 @@ function SignUpAndIn() {
               </label>
               <input
                 type="email"
-                id="email"
+                id="email-in"
                 className="w-full p-2 sm:p-3 border border-gray-300 rounded-xl sm:rounded-2xl mt-2 bg-[#EEF0F5] text-[#3b4452] text-sm sm:text-base"
                 placeholder="Enter your email"
               />
@@ -62,7 +62,7 @@ function SignUpAndIn() {
               </label>
               <input
                 type="password"
-                id="password"
+                id="password-in"
                 className="w-full p-2 sm:p-3 border border-gray-300 rounded-xl sm:rounded-2xl mt-2 bg-[#EEF0F5] text-[#3b4452] text-sm sm:text-base"
                 placeholder="Enter your password"
               />
@@ -81,7 +81,7 @@ function SignUpAndIn() {
               </label>
               <input
                 type="text"
-                id="username"
+                id="username-up"
                 className="w-full p-2 sm:p-3 border border-gray-300 rounded-xl sm:rounded-2xl mt-2 bg-[#EEF0F5] text-[#3b4452] text-sm sm:text-base"
                 placeholder="Enter your username"
               />
@@ -95,7 +95,7 @@ function SignUpAndIn() {
               </label>
               <input
                 type="email"
-                id="email"
+                id="email-up"
                 className="w-full p-2 sm:p-3 border border-gray-300 rounded-xl sm:rounded-2xl mt-2 bg-[#EEF0F5] text-[#3b4452] text-sm sm:text-base"
                 placeholder="Enter your email"
               />
@@ -109,7 +109,7 @@ function SignUpAndIn() {
               </label>
               <input
                 type="password"
-                id="password"
+                id="password-up"
                 className="w-full p-2 sm:p-3 border border-gray-300 rounded-xl sm:rounded-2xl mt-2 bg-[#EEF0F5] text-[#3b4452] text-sm sm:text-base"
                 placeholder="Enter your password"
               />
