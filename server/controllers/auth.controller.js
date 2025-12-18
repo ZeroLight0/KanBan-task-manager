@@ -13,12 +13,14 @@ export const signUp = async (req, res) => {
     let lowercase_email = email.toLowerCase();
     let lowercase_username = username.toLowerCase();
 
-    const existingUserEmail = await User.findOne({ lowercase_email });
+    const existingUserEmail = await User.findOne({ email: lowercase_email });
     if (existingUserEmail) {
       const error = new Error("User already exists with this email");
       throw error;
     }
-    const existingUsername = await User.findOne({ lowercase_username });
+    const existingUsername = await User.findOne({
+      username: lowercase_username,
+    });
     if (existingUsername) {
       const error = new Error("User already exists with this username");
       throw error;
@@ -28,7 +30,13 @@ export const signUp = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     const newUsers = await User.create(
-      [{ lowercase_username, lowercase_email, password: hashedPassword }],
+      [
+        {
+          username: lowercase_username,
+          email: lowercase_email,
+          password: hashedPassword,
+        },
+      ],
       { session }
     );
 
@@ -46,8 +54,8 @@ export const signUp = async (req, res) => {
       data: {
         user: {
           id: newUsers._id,
-          username: newUsers.lowercase_username,
-          email: newUsers.lowercase_email,
+          username: newUsers.username,
+          email: newUsers.email,
         },
       },
     });
@@ -62,7 +70,7 @@ export const signIn = async (req, res) => {
   try {
     const { email, password } = req.body;
     let lowercase_email = email.toLowerCase();
-    const user = await User.findOne({ lowercase_email });
+    const user = await User.findOne({ email: lowercase_email });
 
     if (!user) {
       const error = new Error("User does not exist with this email");

@@ -38,7 +38,7 @@ function TaskForm({ isTaskOpen, setIsTaskOpen, addTask }) {
     // 👇 Inject correct column info (status)
     const newTask = {
       ...formData,
-      status: isTaskOpen?.column || "todo",
+      status: isTaskOpen.column,
     };
 
     try {

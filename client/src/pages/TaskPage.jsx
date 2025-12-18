@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Header from "../components/Header";
-import Column from "../components/Column";
+import Board from "../components/Board";
 
 function TaskPage() {
   const [isTaskOpen, setIsTaskOpen] = useState(false);
@@ -21,7 +21,7 @@ function TaskPage() {
         <Header />
       </div>
       <div className="flex justify-between items-start px-14 py-6">
-        <Column setIsTaskOpen={setIsTaskOpen} isTaskOpen={isTaskOpen} />
+        <Board setIsTaskOpen={setIsTaskOpen} isTaskOpen={isTaskOpen} />
       </div>
     </>
   );
