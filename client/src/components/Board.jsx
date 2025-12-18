@@ -88,6 +88,20 @@ export default function Board({ isTaskOpen, setIsTaskOpen }) {
     setIsTaskOpen(false);
   };
 
+  const handleDeleteTask = (taskId) => {
+    setColumns((prev) => {
+      const updated = { ...prev };
+      Object.keys(updated).forEach((key) => {
+        updated[key] = updated[key].filter((t) => t._id !== taskId);
+      });
+      return updated;
+    });
+  };
+
+  const handleEditTask = (task) => {
+    setIsTaskOpen({ open: true, column: task.status, editingTask: task });
+  };
+
   const labels = {
     todo: "To Do",
     "in-progress": "In Progress",
@@ -105,6 +119,8 @@ export default function Board({ isTaskOpen, setIsTaskOpen }) {
               title={labels[key]}
               tasks={columns[key]}
               onAddTask={(col) => setIsTaskOpen({ open: true, column: col })}
+              onEditTask={handleEditTask}
+              onDeleteTask={handleDeleteTask}
             />
           ))}
         </div>

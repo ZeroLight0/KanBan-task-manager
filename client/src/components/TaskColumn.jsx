@@ -6,7 +6,14 @@ import { useDroppable } from "@dnd-kit/core";
 import SortableTask from "./SortableTask";
 import { VscAdd } from "react-icons/vsc";
 
-export default function TaskColumn({ id, title, tasks, onAddTask }) {
+export default function TaskColumn({
+  id,
+  title,
+  tasks,
+  onAddTask,
+  onEditTask,
+  onDeleteTask,
+}) {
   const { setNodeRef, isOver } = useDroppable({
     id, // 👈 column is now a droppable target
   });
@@ -35,7 +42,12 @@ export default function TaskColumn({ id, title, tasks, onAddTask }) {
         strategy={verticalListSortingStrategy}
       >
         {tasks.map((task) => (
-          <SortableTask key={task._id} task={task} />
+          <SortableTask
+            key={task._id}
+            task={task}
+            onEdit={onEditTask}
+            onDelete={onDeleteTask}
+          />
         ))}
       </SortableContext>
     </div>
