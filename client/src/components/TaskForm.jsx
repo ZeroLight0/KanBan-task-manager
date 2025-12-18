@@ -87,7 +87,7 @@ function TaskForm({ isTaskOpen, setIsTaskOpen, addTask }) {
       const apiBaseUrl =
         import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
 
-      if (isEditing) {
+      if (isEditing && isTaskOpen?.editingTask?._id) {
         // Update existing task
         const response = await fetch(
           `${apiBaseUrl}/api/v1/tasks/${isTaskOpen.editingTask._id}`,
@@ -106,6 +106,7 @@ function TaskForm({ isTaskOpen, setIsTaskOpen, addTask }) {
         if (!response.ok) {
           const errorMessage = result.message || "Error updating task";
           setNotification({ message: errorMessage, type: "error" });
+          setIsLoading(false);
           return;
         }
 
@@ -125,7 +126,7 @@ function TaskForm({ isTaskOpen, setIsTaskOpen, addTask }) {
           // Refresh page to get updated task
           window.location.reload();
         }, 1200);
-      } else {
+      } else if (!isEditing && isTaskOpen?.column) {
         // Create new task
         const newTask = {
           ...formData,
@@ -146,6 +147,7 @@ function TaskForm({ isTaskOpen, setIsTaskOpen, addTask }) {
         if (!response.ok) {
           const errorMessage = result.message || "Error creating task";
           setNotification({ message: errorMessage, type: "error" });
+          setIsLoading(false);
           return;
         }
 
@@ -164,6 +166,13 @@ function TaskForm({ isTaskOpen, setIsTaskOpen, addTask }) {
           });
           setIsTaskOpen(false);
         }, 1200);
+      } else {
+        setNotification({
+          message: "Invalid form state",
+          type: "error",
+        });
+        setIsLoading(false);
+        return;
       }
     } catch (error) {
       console.error("Error:", error);
@@ -184,7 +193,7 @@ function TaskForm({ isTaskOpen, setIsTaskOpen, addTask }) {
         onClose={() => setNotification({ message: "", type: "" })}
       />
       <div
-        className="w-full flex justify-center items-center min-h-screen bg-[#0000004f] fixed top-0 left-0 overflow-hidden"
+        className="w-full flex justify-center items-center min-h-screen bg-[#0000004f] fixed top-0 left-0 overflow-hidden z-12"
         style={{ display: isTaskOpen?.open ? "flex" : "none" }}
       >
         <form

@@ -61,3 +61,57 @@ export const updateTaskStatus = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+export const updateTask = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, description, priority, dueDate, status } = req.body;
+
+    if (!title) {
+      return res.status(400).json({ message: "Title is required" });
+    }
+
+    const updatedTask = await Task.findOneAndUpdate(
+      { _id: id, user: req.user.userId },
+      { title, description, priority, dueDate, status },
+      { new: true }
+    );
+
+    if (!updatedTask) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
+    res.status(200).json({
+      status: true,
+      message: "Task updated successfully",
+      data: updatedTask,
+    });
+  } catch (error) {
+    console.error("Error updating task:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+export const deleteTask = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const deletedTask = await Task.findOneAndDelete({
+      _id: id,
+      user: req.user.userId,
+    });
+
+    if (!deletedTask) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
+    res.status(200).json({
+      status: true,
+      message: "Task deleted successfully",
+      data: deletedTask,
+    });
+  } catch (error) {
+    console.error("Error deleting task:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};

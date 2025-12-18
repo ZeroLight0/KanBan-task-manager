@@ -8,6 +8,7 @@ export default function SortableTask({ task, onEdit, onDelete }) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: task._id });
   const [showMenu, setShowMenu] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -32,6 +33,7 @@ export default function SortableTask({ task, onEdit, onDelete }) {
     const apiBaseUrl =
       import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
 
+    setIsDeleting(true);
     try {
       const response = await fetch(`${apiBaseUrl}/api/v1/tasks/${task._id}`, {
         method: "DELETE",
@@ -49,6 +51,8 @@ export default function SortableTask({ task, onEdit, onDelete }) {
     } catch (error) {
       console.error("Error deleting task:", error);
       alert("Failed to delete task");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -75,14 +79,12 @@ export default function SortableTask({ task, onEdit, onDelete }) {
             }}
           >
             <button
-              onPointerDown={(e) => {
-                e.stopPropagation();
-              }}
               onClick={(e) => {
                 e.stopPropagation();
                 setShowMenu(!showMenu);
               }}
-              className="p-1 hover:bg-gray-200 rounded transition relative z-10"
+              className="p-1 hover:bg-gray-200 rounded transition relative z-10 disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={isDeleting}
             >
               <FaEllipsisH className="text-gray-500" />
             </button>
@@ -95,7 +97,8 @@ export default function SortableTask({ task, onEdit, onDelete }) {
                     onEdit(task);
                     setShowMenu(false);
                   }}
-                  className="w-full px-4 py-2 text-left hover:bg-blue-50 text-blue-600 font-medium transition text-sm"
+                  className="w-full px-4 py-2 text-left hover:bg-blue-50 text-blue-600 font-medium transition text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={isDeleting}
                 >
                   Edit
                 </button>
@@ -104,9 +107,10 @@ export default function SortableTask({ task, onEdit, onDelete }) {
                     e.stopPropagation();
                     handleDelete();
                   }}
-                  className="w-full px-4 py-2 text-left hover:bg-red-50 text-red-600 font-medium transition text-sm border-t border-gray-200"
+                  className="w-full px-4 py-2 text-left hover:bg-red-50 text-red-600 font-medium transition text-sm border-t border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={isDeleting}
                 >
-                  Delete
+                  {isDeleting ? "Deleting..." : "Delete"}
                 </button>
               </div>
             )}
