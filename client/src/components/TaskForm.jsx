@@ -25,31 +25,51 @@ function TaskForm({ isTaskOpen, setIsTaskOpen, addTask }) {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.title.trim()) return;
 
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("You must be logged in to add a task.");
+      return;
+    }
+
+    // 👇 Inject correct column info (status)
     const newTask = {
-      title: formData.title,
-      description: formData.description,
-      priority: formData.priority,
-      dueDate: formData.dueDate || new Date().toISOString().split("T")[0],
+      ...formData,
+      status: isTaskOpen?.column || "todo",
     };
 
-    addTask(newTask);
+    try {
+      const apiBaseUrl =
+        import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+      const response = await fetch(`${apiBaseUrl}/api/v1/tasks/create`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(newTask),
+      });
 
-    setFormData({
-      title: "",
-      description: "",
-      priority: "low",
-      dueDate: "",
-    });
+      const result = await response.json();
+      if (!response.ok)
+        throw new Error(result.message || "Error creating task");
+
+      addTask(result.data); // ✅ Add to UI
+      setFormData({ title: "", description: "", priority: "low", dueDate: "" });
+    } catch (error) {
+      console.error("Error:", error);
+      alert(error.message);
+    }
   };
+
   return (
     <>
       <div
         className="w-full flex justify-center items-center min-h-screen bg-[#0000004f] absolute top-0 left-0 overflow-hidden"
-        style={{ display: isTaskOpen ? "flex" : "none" }}
+        style={{ display: isTaskOpen?.open ? "flex" : "none" }}
       >
         <form
           action=""

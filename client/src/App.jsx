@@ -7,10 +7,10 @@ function App() {
     <>
       <Routes>
         {/* Route for Home */}
-        <Route path="/" element={<TaskPage />} />
+        <Route path="/home" element={<TaskPage />} />
 
         {/* Route for Sign in / up */}
-        <Route path="/signup" element={<SignUpPage />} />
+        <Route path="/" element={<SignUpPage />} />
       </Routes>
     </>
   );

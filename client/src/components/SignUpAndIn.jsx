@@ -3,6 +3,118 @@ import { useState } from "react";
 function SignUpAndIn() {
   const [isSignIn, setIsSignIn] = useState(true);
   const [isSignUp, setIsSignUp] = useState(false);
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    password: "",
+  });
+
+  const validateSignUp = () => {
+    const { username, email, password } = formData;
+    if (!email || !password || !username) {
+      alert("Please complete all details");
+      return false;
+    }
+    if (!email.includes("@")) {
+      alert("Please enter a valid email address");
+      return false;
+    }
+    return true;
+  };
+
+  const validateSignIn = () => {
+    const { email, password } = formData;
+    if (!email || !password) {
+      alert("Please complete all details");
+      return false;
+    }
+    if (!email.includes("@")) {
+      alert("Please enter a valid email address");
+      return false;
+    }
+    return true;
+  };
+
+  const handleSignUp = async (e) => {
+    e.preventDefault();
+
+    if (!validateSignUp()) return;
+    try {
+      const apiBaseUrl =
+        import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+      console.log(
+        "🟡 Sending request to:",
+        `${apiBaseUrl}/api/v1/auth/sign-up`
+      );
+      const response = await fetch(`${apiBaseUrl}/api/v1/auth/sign-up`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+      const result = await response.json();
+      console.log("🟡 Backend response:", result);
+
+      if (!response.ok) {
+        throw new Error(
+          result.message || `HTTP error! status: ${response.status}`
+        );
+      }
+      if (response.ok) {
+        localStorage.setItem("token", result.token);
+        localStorage.setItem("user", JSON.stringify(result.data.user));
+        alert("✅ Account created successfully!");
+        window.location.href = "/home";
+      }
+      setFormData({ username: "", email: "", password: "" });
+    } catch (error) {
+      console.log("Error during sign up:", error);
+    }
+  };
+
+  const handleSignIn = async (e) => {
+    e.preventDefault();
+    if (!validateSignIn()) return;
+
+    try {
+      const apiBaseUrl =
+        import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+      console.log(
+        "🟡 Sending request to:",
+        `${apiBaseUrl}/api/v1/auth/sign-in`
+      );
+      const response = await fetch(`${apiBaseUrl}/api/v1/auth/sign-in`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+      const result = await response.json();
+      console.log("🟡 Backend response:", result);
+
+      if (!response.ok) {
+        throw new Error(
+          result.message || `HTTP error! status: ${response.status}`
+        );
+      }
+      if (response.ok) {
+        localStorage.setItem("token", result.token);
+        localStorage.setItem("user", JSON.stringify(result.data.user));
+        alert("✅ Signed in successfully!");
+        window.location.href = "/home";
+      }
+      setFormData({ username: "", email: "", password: "" });
+    } catch (error) {
+      console.log("Error during sign in:", error);
+    }
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
 
   return (
     <>
@@ -48,6 +160,10 @@ function SignUpAndIn() {
               </label>
               <input
                 type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
                 id="email-in"
                 className="w-full p-2 sm:p-3 border border-gray-300 rounded-xl sm:rounded-2xl mt-2 bg-[#EEF0F5] text-[#3b4452] text-sm sm:text-base"
                 placeholder="Enter your email"
@@ -61,13 +177,20 @@ function SignUpAndIn() {
                 Password
               </label>
               <input
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                required
                 type="password"
                 id="password-in"
                 className="w-full p-2 sm:p-3 border border-gray-300 rounded-xl sm:rounded-2xl mt-2 bg-[#EEF0F5] text-[#3b4452] text-sm sm:text-base"
                 placeholder="Enter your password"
               />
             </div>
-            <button className="bg-[#447CEE] text-white px-4 py-2 sm:py-3 rounded-xl sm:rounded-2xl w-full mt-4 cursor-pointer text-sm sm:text-base font-semibold hover:bg-[#3a6bd6] transition-colors">
+            <button
+              className="bg-[#447CEE] text-white px-4 py-2 sm:py-3 rounded-xl sm:rounded-2xl w-full mt-4 cursor-pointer text-sm sm:text-base font-semibold hover:bg-[#3a6bd6] transition-colors"
+              onClick={handleSignIn}
+            >
               Sign In
             </button>
           </form>
@@ -77,10 +200,14 @@ function SignUpAndIn() {
                 htmlFor="username"
                 className="font-semibold text-sm sm:text-base"
               >
-                Username (optional)
+                Username
               </label>
               <input
                 type="text"
+                required
+                name="username"
+                value={formData.username}
+                onChange={handleChange}
                 id="username-up"
                 className="w-full p-2 sm:p-3 border border-gray-300 rounded-xl sm:rounded-2xl mt-2 bg-[#EEF0F5] text-[#3b4452] text-sm sm:text-base"
                 placeholder="Enter your username"
@@ -95,6 +222,10 @@ function SignUpAndIn() {
               </label>
               <input
                 type="email"
+                required
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
                 id="email-up"
                 className="w-full p-2 sm:p-3 border border-gray-300 rounded-xl sm:rounded-2xl mt-2 bg-[#EEF0F5] text-[#3b4452] text-sm sm:text-base"
                 placeholder="Enter your email"
@@ -109,12 +240,19 @@ function SignUpAndIn() {
               </label>
               <input
                 type="password"
+                required
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
                 id="password-up"
                 className="w-full p-2 sm:p-3 border border-gray-300 rounded-xl sm:rounded-2xl mt-2 bg-[#EEF0F5] text-[#3b4452] text-sm sm:text-base"
                 placeholder="Enter your password"
               />
             </div>
-            <button className="bg-[#447CEE] text-white px-4 py-2 sm:py-3 rounded-xl sm:rounded-2xl w-full mt-4 cursor-pointer text-sm sm:text-base font-semibold hover:bg-[#3a6bd6] transition-colors">
+            <button
+              className="bg-[#447CEE] text-white px-4 py-2 sm:py-3 rounded-xl sm:rounded-2xl w-full mt-4 cursor-pointer text-sm sm:text-base font-semibold hover:bg-[#3a6bd6] transition-colors"
+              onClick={handleSignUp}
+            >
               Sign Up
             </button>
           </form>
